@@ -1,0 +1,5 @@
+Definition() {
+    OnThen->Pop("dirs") {
+        OnThen->Info():Call(f"dirsfiles.rkop") & Call(f"dirs.rkop");        
+    };
+} 

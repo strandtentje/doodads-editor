@@ -1,0 +1,5 @@
+Definition() {
+    OnThen->Pop("files") {
+        OnThen->Info():Template():PrintContent(f"openfile.html") & Call(f"files.rkop");
+    };
+}

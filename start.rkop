@@ -1,0 +1,7 @@
+Definition() {
+    OnThen->Load("url"):Split("/"):Store("crumbs"):Pop("crumbs") {
+        OnThen->PrintContentByFilenames([f"style.css"]);
+        OnElse->Template():PrintContent(f"skeleton.html")
+              | Case("openfiles"):ProgDirs():Store("dirs"):Call(f"dirs.rkop");
+    };
+};      
