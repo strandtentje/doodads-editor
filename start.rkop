@@ -2,6 +2,9 @@ Definition() {
     OnThen->Load("url"):Split("/"):Store("crumbs"):Pop("crumbs") {
         OnThen->PrintContentByFilenames([f"style.css"]);
         OnElse->Template():PrintContent(f"skeleton.html")
-              | Case("openfiles"):ProgDirs():Store("dirs"):Call(f"dirs.rkop");
+              | Case("openfiles")
+              : ProgDirs()
+              : Store("List of Directories")
+              : Call(f"Filesystem @ Continue listing directories");
     };
 };      
