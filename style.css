@@ -1,3 +1,16 @@
 body {
     background-color: gray;
 }
+
+.series.unconditional {
+    border-top: double 8px black;
+    border-left: double 8px black;
+}
+.series.alternative {
+    border-top: solid 2px black;
+    border-left: solid 2px black;
+}
+.series.conditional {
+    border-top: dotted 2px black;
+    border-left: dotted 2px black;
+}

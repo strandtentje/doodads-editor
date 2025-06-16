@@ -1,7 +1,7 @@
 Definition("List Directories and Files within")
 {
     OnThen->Store("Current Directory") {
-        OnThen->Template():PrintContent(f"Directory Tree.html")
+        OnThen->Template():PrintContent(f"templates/Directory Tree.html")
             | 
             Case("subdirs"):Load("Current Directory"):Dir() {
                 OnThen->Store("List of Directories")
@@ -28,7 +28,7 @@ Definition("Continue listing files") {
     OnThen->Pop("List of Files") {
         OnThen->Info()
               : Template()
-              : PrintContent(f"File Item.html") 
+              : PrintContent(f"templates/File Item.html") 
               & Call("@Continue listing files");
     };
 };

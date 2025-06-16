@@ -1,10 +1,122 @@
 Definition() {
     OnThen->Load("url"):Split("/"):Store("crumbs"):Pop("crumbs") {
         OnThen->PrintContentByFilenames([f"style.css"]);
-        OnElse->Template():PrintContent(f"skeleton.html")
-              | Case("openfiles")
-              : ProgDirs()
-              : Store("List of Directories")
-              : Call(f"Filesystem @ Continue listing directories");
+        OnElse->Call(f"@Editor Window");  
     };
 };      
+
+Definition("Editor Window")
+          : Template():PrintContent(f"templates/Skeleton.html")
+          | Case("openfiles")
+          : ProgDirs()
+          : Store("List of Directories")
+          : Call(f"Filesystem @ Continue listing directories")
+        
+          | Case("categories")
+          : Call(f"@ Category List")
+          : Call(f"@ Service List")
+
+          | Case("program")
+          : Call(f"@ Check for Program in Query")
+          ;
+
+Definition("Check for Program in Query") {
+    OnThen->Load("query"):Case("") {
+        OnThen->Print("Pick a program.");
+        OnElse->Call(f"@ Show Program");
+    };
+};
+
+Definition("Show Program")
+          : DefinitionsInFile()
+          : Load("names")
+          : For()
+          : Store("name")
+          : Store("displayname")
+          : Case("") {
+            OnThen->Call(f"@ Show Program Root", displayname = "Entrypoint");
+            OnElse->Call(f"@ Show Program Root");
+          };
+
+Definition("Show Program Root")
+          : Template()
+          : PrintContent(f"templates/Program Root.html")
+          | Case("service")
+          : Load("name")
+          : ServiceInDefinition()
+          : Call(f"@ Display Series or Service");
+
+Definition("Display Series or Service")
+          : ServiceDiscriminator() {
+            OnThen->Call(f"@ Display Service");
+            OnElse->Call(f"@ Display Series");
+          };
+
+Definition("Display Series")
+          : Template()
+          : PrintContent(f"templates/Series Block.html")
+          | Case("children")
+          : Load("children")
+          : For()
+          : Store("child expression")
+          : Call(f"@ Wrap Series Child");
+
+Definition("Wrap Series Child")
+          : Template()
+          : PrintContent(f"templates/Series Child.html")
+          | Case("child")
+          : Load("child expression")
+          : Call(f"@ Display Series or Service"); 
+
+Definition("Display Service")
+          : Template()
+          : PrintContent(f"templates/Service Block.html")
+
+          | Case("children")
+          : Load("childnames")
+          : For()
+          : Store("childname")  
+          : Call(f"@ Display Service Child by Name")
+          
+          | Case("consts")
+          : Load("constnames")
+          : For()
+          : Store("constname")
+          : Call(f"@ Display Service Const by Name");
+
+Definition("Display Service Child by Name")
+          : Template()
+          : PrintContent(f"templates/Named Child.html")
+          | Case("child")
+          : Load("childname")
+          : GetServiceChild()
+          : Call(f"@ Display Series or Service"); 
+
+Definition("Display Service Const by Name")
+          : Template()
+          : PrintContent(f"templates/Named Const.html")
+          | Case("const")
+          : GetServiceConst()
+          : Store("constvalue")
+          : Call(f"@ Display Const Value");
+
+Definition("Display Const Value")
+          : Template()
+          : PrintContent(f"templates/Const Value.html");
+
+Definition("Category List") 
+          : ServiceCategories()
+          : For()
+          : Store("category")
+          : Template()
+          : PrintContent(f"templates/Category Item.html")
+          | Case("services")
+          : Load("category")
+          : ReturnThen(); 
+
+Definition("Service List")
+          : CategoryServices()
+          : For()
+          : Store("service")
+          : Template()
+          : PrintContent(f"templates/Service Item.html");  
